@@ -3,47 +3,10 @@
 
 <%@include file="../jsp/plug/nav-head.jsp" %>
 
-<script type="text/javascript">
-	var nicEditorConfig = {
-	buttons : {
-		'save' : {name : '保存', type : 'nicEditorSaveButton', tile : 1},
-		'undo' : {name : '撤销', command : 'undo', noActive : true, tile : 23},
-		'redo' : {name : '重做', command : 'redo', noActive : true, tile : 24},
-		'bold' : {name : '加黑', command : 'Bold', tags : ['B','STRONG'], css : {'font-weight' : 'bold'}, tile : 2},
-		'italic' : {name : '倾斜', command : 'Italic', tags : ['EM','I'], css : {'font-style' : 'italic'}, tile : 3},
-		'underline' : {name : '下划线', command : 'Underline', tags : ['U'], css : {'text-decoration' : 'underline'}, tile : 4},
-		'left' : {name : '左对齐', command : 'justifyleft', noActive : true, tile : 8},
-		'center' : {name : '中间对齐', command : 'justifycenter', noActive : true, tile : 9},
-		'right' : {name : '右对齐', command : 'justifyright', noActive : true, tile : 10},
-		'ol' : {name : '有序列表', command : 'insertorderedlist', tags : ['OL'], tile : 12},
-		'ul' : 	{name : '无序列表', command : 'insertunorderedlist', tags : ['UL'], tile : 13},
-		'fontSize' : {name : '字体大小', type : 'nicEditorFontSizeSelect', command : 'fontsize'},
-		'fontFamily' : {name : '字体样式', type : 'nicEditorFontFamilySelect', command : 'fontname'},
-		'fontFormat' : {name : '字体格式', type : 'nicEditorFontFormatSelect', command : 'formatBlock'},
-		'subscript' : {name : '下标', command : 'subscript', tags : ['SUB'], tile : 6, disabled : true},
-		'superscript' : {name : '上标', command : 'superscript', tags : ['SUP'], tile : 5, disabled : true},
-		'strikeThrough' : {name : '删除线', command : 'strikeThrough', css : {'text-decoration' : 'line-through'}, tile : 7, disabled : true},
-		'indent' : {name : '减少缩进量', command : 'indent', noActive : true, tile : 20},
-		'unindent' : {name : '增加缩进量', command : 'outdent', noActive : true, tile : 21},
-		'hr' : {name : '水平线', command : 'insertHorizontalRule', noActive : true, tile : 22},
-		'color' : {name : '更改颜色', type : 'nicEditorColorButton', tile : 25},
-		'image' : {name : '添加图片', type : 'nicEditorImageButton', tile : 14},
-		'html' : {name : '编辑 HTML', type : 'nicEditorHTMLButton', tile : 16},
-		'link' : {name : '链接', type : 'nicEditorLinkButton', tile : 17}
-	},
-	iconsPath : '${pageContext.request.contextPath}/jpg/nicEditorIcons.gif',
-	fullPanel : false,
-	onSubmit : null,
-	buttonList : ['bold','italic','underline','left','center','right','ol','ul','indent','unindent','fontSize','fontFamily','image','link', 'superscript', 'subscript', 'strikeThrough'],
-	toolTipOn : false,
-	toolTipText : '点击编辑'
-};
-</script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/js/bkLib.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/js/nicEdit.js"></script>
-<script type="text/javascript">
-	bkLib.onDomLoaded(function() { nicEditors.allTextAreas(); });
-</script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/umeditor.config.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/umeditor.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/zh-cn.js"></script>
+
 <script>
 	$(document).ready(function(){
 		var tpl = $('#table_tpl').html();
@@ -56,7 +19,9 @@
 			});
 		};
 		var addTr = function(){
-			$('#table_footer').before($(addTpl({id:index++})));
+			$('#table_footer').before($(addTpl({id:index})));
+			var important = UM.getEditor('businessdescription'+index);
+			index++;
 		};				
 		$("#addtask").click(function(){
 			addTr();
@@ -107,7 +72,7 @@
                     </tr>
                     <tr>
                     	<td colspan="8">
-                        	<textarea class="form-control" rows="6" name="important" autofocus="autofocus">${detailmodel.important}</textarea>
+                        	<textarea id="important" class="form-control" rows="6" name="important" autofocus="autofocus">${detailmodel.important}</textarea>
                         </td>
                     </tr>
                     <tr style="background-color:#0CF" id="table_header">
@@ -129,203 +94,207 @@
                     <c:forEach  items="${Businessmodel}" var="business" varStatus="st">
                     	<tr class="change${st.count}">
                     		<td colspan="1" rowspan="5" style="background-color:#FC6;vertical-align:middle;"><div class="text-center">业务线${st.count}</div></td>
-				<td colspan="7"><input class="form-control" type="text" value="${business.businessname}" name="businessname${st.count}"/></td>
-                    	</tr>
-                    	<tr class="change${st.count}">
-				<td colspan="2" style="background-color:#FC6"><div class="text-center">产品线</div></td>
-				<td colspan="1" style="background-color:#FC6"><div class="text-center">优先级</div></td>
-				<td colspan="1" style="background-color:#FC6"><div class="text-center">工作进度</div></td>
-				<td colspan="1" style="background-color:#FC6"><div class="text-center">BUG数</div></td>
-				<td colspan="2" style="background-color:#FC6"><div class="text-center">跟进人员</div></td>
-			</tr>
-			<tr class="change${st.count}">
-				<td colspan="2"><input class="form-control" type="text" value="${business.productname}" name="productname${st.count}"/></td>
-				<td colspan="1">
-					<select class="form-control" name="priority${st.count}">
-						<c:choose>
-							<c:when test="${business.priority eq 'P2'}">
-								<option>P1</option>
-								<option selected="selected">P2</option>
-								<option>P3</option>
-							</c:when>
-							<c:when test="${business.priority eq 'P3'}">
-								<option>P1</option>
-								<option>P2</option>
-								<option selected="selected">P3</option>
-							</c:when>
-							<c:otherwise>
-								<option selected="selected">P1</option>
-								<option>P2</option>
-								<option>P3</option>
-							</c:otherwise>
-						</c:choose>
-					</select>
-				</td>
-				<td colspan="1">
-					<select class="form-control"  name="progress${st.count}">
-						<c:choose>
-							<c:when test="${business.progress eq '10%'}">
-								<option>0%</option>
-								<option selected="selected">10%</option>
-								<option>20%</option>
-								<option>30%</option>
-								<option>40%</option>
-								<option>50%</option>
-								<option>60%</option>
-								<option>70%</option>
-								<option>80%</option>
-								<option>90%</option>
-								<option>100%</option>
-							</c:when>
-							<c:when test="${business.progress eq '20%'}">
-								<option>0%</option>
-								<option>10%</option>
-								<option selected="selected">20%</option>
-								<option>30%</option>
-								<option>40%</option>
-								<option>50%</option>
-								<option>60%</option>
-								<option>70%</option>
-								<option>80%</option>
-								<option>90%</option>
-								<option>100%</option>
-							</c:when>
-							<c:when test="${business.progress eq '30%'}">
-								<option>0%</option>
-								<option>10%</option>
-								<option>20%</option>
-								<option selected="selected">30%</option>
-								<option>40%</option>
-								<option>50%</option>
-								<option>60%</option>
-								<option>70%</option>
-								<option>80%</option>
-								<option>90%</option>
-								<option>100%</option>
-							</c:when>
-							<c:when test="${business.progress eq '40%'}">
-								<option>0%</option>
-								<option>10%</option>
-								<option>20%</option>
-								<option>30%</option>
-								<option selected="selected">40%</option>
-								<option>50%</option>
-								<option>60%</option>
-								<option>70%</option>
-								<option>80%</option>
-								<option>90%</option>
-								<option>100%</option>
-							</c:when>
-							<c:when test="${business.progress eq '50%'}">
-								<option>0%</option>
-								<option>10%</option>
-								<option>20%</option>
-								<option>30%</option>
-								<option>40%</option>
-								<option selected="selected">50%</option>
-								<option>60%</option>
-								<option>70%</option>
-								<option>80%</option>
-								<option>90%</option>
-								<option>100%</option>
-							</c:when>
-							<c:when test="${business.progress eq '60%'}">
-								<option>0%</option>
-								<option>10%</option>
-								<option>20%</option>
-								<option>30%</option>
-								<option>40%</option>
-								<option>50%</option>
-								<option selected="selected">60%</option>
-								<option>70%</option>
-								<option>80%</option>
-								<option>90%</option>
-								<option>100%</option>
-							</c:when>
-							<c:when test="${business.progress eq '70%'}">
-								<option>0%</option>
-								<option>10%</option>
-								<option>20%</option>
-								<option>30%</option>
-								<option>40%</option>
-								<option>50%</option>
-								<option>60%</option>
-								<option selected="selected">70%</option>
-								<option>80%</option>
-								<option>90%</option>
-								<option>100%</option>
-							</c:when>
-							<c:when test="${business.progress eq '80%'}">
-								<option>0%</option>
-								<option>10%</option>
-								<option>20%</option>
-								<option>30%</option>
-								<option>40%</option>
-								<option>50%</option>
-								<option>60%</option>
-								<option>70%</option>
-								<option selected="selected">80%</option>
-								<option>90%</option>
-								<option>100%</option>
-							</c:when>
-							<c:when test="${business.progress eq '90%'}">
-								<option>0%</option>
-								<option>10%</option>
-								<option>20%</option>
-								<option>30%</option>
-								<option>40%</option>
-								<option>50%</option>
-								<option>60%</option>
-								<option>70%</option>
-								<option>80%</option>
-								<option selected="selected">90%</option>
-								<option>100%</option>
-							</c:when>
-							<c:when test="${business.progress eq '100%'}">
-								<option>0%</option>
-								<option>10%</option>
-								<option>20%</option>
-								<option>30%</option>
-								<option>40%</option>
-								<option>50%</option>
-								<option>60%</option>
-								<option>70%</option>
-								<option>80%</option>
-								<option>90%</option>
-								<option selected="selected">100%</option>
-							</c:when>
-							<c:otherwise>
-								<option selected="selected">0%</option>
-								<option>10%</option>
-								<option>20%</option>
-								<option>30%</option>
-								<option>40%</option>
-								<option>50%</option>
-								<option>60%</option>
-								<option>70%</option>
-								<option>80%</option>
-								<option>90%</option>
-								<option>100%</option>
-							</c:otherwise>
-						</c:choose>
-					</select>
-				</td>
-				<td colspan="1"><input class="form-control" type="text" value="${business.bugnum}" name="bugnum${st.count}"/></td>
-				<td colspan="2"><input class="form-control" type="text" value="${business.person}" name="person${st.count}"/></td>
-			</tr>
-			<tr class="change${st.count}">
-				<td colspan="7" style="background-color:#FC6"><div class="text-center">业务概述</div></td>
-			</tr>
-			<tr class="change${st.count}">
-				<td colspan="7"><textarea class="form-control" rows="5"  name="businessdescription${st.count}">${business.businessdescription}</textarea></td>
-			</tr>
+							<td colspan="7"><input class="form-control" type="text" value="${business.businessname}" name="businessname${st.count}"/></td>
+			                    	</tr>
+			                    	<tr class="change${st.count}">
+							<td colspan="2" style="background-color:#FC6"><div class="text-center">产品线</div></td>
+							<td colspan="1" style="background-color:#FC6"><div class="text-center">优先级</div></td>
+							<td colspan="1" style="background-color:#FC6"><div class="text-center">工作进度</div></td>
+							<td colspan="1" style="background-color:#FC6"><div class="text-center">BUG数</div></td>
+							<td colspan="2" style="background-color:#FC6"><div class="text-center">跟进人员</div></td>
+						</tr>
+						<tr class="change${st.count}">
+							<td colspan="2"><input class="form-control" type="text" value="${business.productname}" name="productname${st.count}"/></td>
+							<td colspan="1">
+								<select class="form-control" name="priority${st.count}">
+									<c:choose>
+										<c:when test="${business.priority eq 'P2'}">
+											<option>P1</option>
+											<option selected="selected">P2</option>
+											<option>P3</option>
+										</c:when>
+										<c:when test="${business.priority eq 'P3'}">
+											<option>P1</option>
+											<option>P2</option>
+											<option selected="selected">P3</option>
+										</c:when>
+										<c:otherwise>
+											<option selected="selected">P1</option>
+											<option>P2</option>
+											<option>P3</option>
+										</c:otherwise>
+									</c:choose>
+								</select>
+							</td>
+							<td colspan="1">
+								<select class="form-control"  name="progress${st.count}">
+									<c:choose>
+										<c:when test="${business.progress eq '10%'}">
+											<option>0%</option>
+											<option selected="selected">10%</option>
+											<option>20%</option>
+											<option>30%</option>
+											<option>40%</option>
+											<option>50%</option>
+											<option>60%</option>
+											<option>70%</option>
+											<option>80%</option>
+											<option>90%</option>
+											<option>100%</option>
+										</c:when>
+										<c:when test="${business.progress eq '20%'}">
+											<option>0%</option>
+											<option>10%</option>
+											<option selected="selected">20%</option>
+											<option>30%</option>
+											<option>40%</option>
+											<option>50%</option>
+											<option>60%</option>
+											<option>70%</option>
+											<option>80%</option>
+											<option>90%</option>
+											<option>100%</option>
+										</c:when>
+										<c:when test="${business.progress eq '30%'}">
+											<option>0%</option>
+											<option>10%</option>
+											<option>20%</option>
+											<option selected="selected">30%</option>
+											<option>40%</option>
+											<option>50%</option>
+											<option>60%</option>
+											<option>70%</option>
+											<option>80%</option>
+											<option>90%</option>
+											<option>100%</option>
+										</c:when>
+										<c:when test="${business.progress eq '40%'}">
+											<option>0%</option>
+											<option>10%</option>
+											<option>20%</option>
+											<option>30%</option>
+											<option selected="selected">40%</option>
+											<option>50%</option>
+											<option>60%</option>
+											<option>70%</option>
+											<option>80%</option>
+											<option>90%</option>
+											<option>100%</option>
+										</c:when>
+										<c:when test="${business.progress eq '50%'}">
+											<option>0%</option>
+											<option>10%</option>
+											<option>20%</option>
+											<option>30%</option>
+											<option>40%</option>
+											<option selected="selected">50%</option>
+											<option>60%</option>
+											<option>70%</option>
+											<option>80%</option>
+											<option>90%</option>
+											<option>100%</option>
+										</c:when>
+										<c:when test="${business.progress eq '60%'}">
+											<option>0%</option>
+											<option>10%</option>
+											<option>20%</option>
+											<option>30%</option>
+											<option>40%</option>
+											<option>50%</option>
+											<option selected="selected">60%</option>
+											<option>70%</option>
+											<option>80%</option>
+											<option>90%</option>
+											<option>100%</option>
+										</c:when>
+										<c:when test="${business.progress eq '70%'}">
+											<option>0%</option>
+											<option>10%</option>
+											<option>20%</option>
+											<option>30%</option>
+											<option>40%</option>
+											<option>50%</option>
+											<option>60%</option>
+											<option selected="selected">70%</option>
+											<option>80%</option>
+											<option>90%</option>
+											<option>100%</option>
+										</c:when>
+										<c:when test="${business.progress eq '80%'}">
+											<option>0%</option>
+											<option>10%</option>
+											<option>20%</option>
+											<option>30%</option>
+											<option>40%</option>
+											<option>50%</option>
+											<option>60%</option>
+											<option>70%</option>
+											<option selected="selected">80%</option>
+											<option>90%</option>
+											<option>100%</option>
+										</c:when>
+										<c:when test="${business.progress eq '90%'}">
+											<option>0%</option>
+											<option>10%</option>
+											<option>20%</option>
+											<option>30%</option>
+											<option>40%</option>
+											<option>50%</option>
+											<option>60%</option>
+											<option>70%</option>
+											<option>80%</option>
+											<option selected="selected">90%</option>
+											<option>100%</option>
+										</c:when>
+										<c:when test="${business.progress eq '100%'}">
+											<option>0%</option>
+											<option>10%</option>
+											<option>20%</option>
+											<option>30%</option>
+											<option>40%</option>
+											<option>50%</option>
+											<option>60%</option>
+											<option>70%</option>
+											<option>80%</option>
+											<option>90%</option>
+											<option selected="selected">100%</option>
+										</c:when>
+										<c:otherwise>
+											<option selected="selected">0%</option>
+											<option>10%</option>
+											<option>20%</option>
+											<option>30%</option>
+											<option>40%</option>
+											<option>50%</option>
+											<option>60%</option>
+											<option>70%</option>
+											<option>80%</option>
+											<option>90%</option>
+											<option>100%</option>
+										</c:otherwise>
+									</c:choose>
+								</select>
+							</td>
+							<td colspan="1"><input class="form-control" type="text" value="${business.bugnum}" name="bugnum${st.count}"/></td>
+							<td colspan="2"><input class="form-control" type="text" value="${business.person}" name="person${st.count}"/></td>
+						</tr>
+						<tr class="change${st.count}">
+							<td colspan="7" style="background-color:#FC6"><div class="text-center">业务概述</div></td>
+						</tr>
+						<tr class="change${st.count}">
+							<td colspan="7"><textarea id="businessdescription${st.count}" class="form-control" rows="5"  name="businessdescription${st.count}">${business.businessdescription}</textarea></td>
+						</tr>
+						<script type="text/javascript">
+							    //实例化编辑器
+							    UM.getEditor('businessdescription'+"${st.count}");
+						</script>
                     </c:forEach>
                     <tr style="background-color:#0CF" id="table_footer">
                     	<td colspan="8"><div class="text-center">业务，技术及其他事项补充说明</div></td>
                     </tr>
                     <tr>
                     	<td colspan="8">
-                        	<textarea class="form-control" rows="6" name="description">${detailmodel.description}</textarea>
+                        	<textarea id="description" class="form-control" rows="6" name="description">${detailmodel.description}</textarea>
                         </td>
                     </tr>
                     <tr style="background-color:#0CF">
@@ -333,7 +302,7 @@
                     </tr>
                     <tr>
                     	<td colspan="8">
-                        	<textarea class="form-control" rows="6" name="next">${detailmodel.next}</textarea>
+                        	<textarea id="next" class="form-control" rows="6" name="next">${detailmodel.next}</textarea>
                         </td>
                     </tr>
                 </tbody>
@@ -391,8 +360,15 @@
 		<td colspan="7" style="background-color:#FC6"><div class="text-center">业务概述</div></td>
 	</tr>
 	<tr class="change{{=id}}">
-		<td colspan="7"><textarea class="form-control" rows="5"  name="businessdescription{{=id}}"></textarea></td>
+		<td colspan="7"><textarea id="businessdescription{{=id}}" class="form-control" rows="5"  name="businessdescription{{=id}}"></textarea></td>
 	</tr>
+</script>
+
+<script type="text/javascript">
+    //实例化编辑器
+    var important = UM.getEditor('important');
+    var description = UM.getEditor('description');
+    var next = UM.getEditor('next');
 </script>
 
 <%@include file="../jsp/plug/nav-bottom.jsp" %>

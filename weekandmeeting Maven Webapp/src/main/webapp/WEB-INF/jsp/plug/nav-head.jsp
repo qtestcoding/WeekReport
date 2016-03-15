@@ -37,6 +37,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<link href="${pageContext.request.contextPath}/css/bootstrap.css" rel="stylesheet" type="text/css">
 	<link href="${pageContext.request.contextPath}/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 	<link href="${pageContext.request.contextPath}/css/daterangepicker-bs3.css" rel="stylesheet" type="text/css">
+	<link href="${pageContext.request.contextPath}/css/umeditor.css" rel="stylesheet" type="text/css">
 	<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-1.7.2.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/js/bootstrap.js"></script>
 	<script>
