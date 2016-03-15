@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation=
+               "http://www.springframework.org/schema/beans
+              http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+              http://www.springframework.org/schema/aop
+              http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+              http://www.springframework.org/schema/context
+              http://www.springframework.org/schema/context/spring-context.xsd
+              http://www.springframework.org/schema/tx
+              http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+
+	<context:component-scan base-package="com.dao"/>
+	<context:component-scan base-package="com.service"/>
+
+    <!--引入配置文件-->
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--配置Mysql数据源-->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close"
+          p:driverClassName="${driver}"
+          p:url="${url}"
+          p:username="${username}"
+          p:password="${password}"
+          p:initialSize="${initialSize}"
+          p:maxActive="${maxActive}"
+          p:maxIdle="${maxIdle}"
+          p:minIdle="${minIdle}"
+          p:maxWait="${maxWait}"
+          p:validationQuery="SELECT 1"/>
+	
+	<!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->  
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">  
+        <property name="dataSource" ref="dataSource" />  
+        <!-- 自动扫描mapping.xml文件 -->  
+        <property name="mapperLocations" value="classpath:com/mapping/*.xml"></property>  
+    </bean>  
+    
+    <!-- user表操作 -->
+    <bean id="userDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="mapperInterface" value="com.dao.UserDao"></property>  
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>  
+	</bean> 
+	
+	<!-- weekly表操作 -->
+	<bean id="weeklyDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="mapperInterface" value="com.dao.WeeklyDao"></property>  
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>  
+	</bean> 
+	
+	<!-- detail表操作 -->
+	<bean id="detailDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<property name="mapperInterface" value="com.dao.DetailDao"></property>  
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>  
+	</bean> 
+  
+    <!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->  
+    <bean id="transactionManager"  
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
+        <property name="dataSource" ref="dataSource" />  
+    </bean>  
+</beans>

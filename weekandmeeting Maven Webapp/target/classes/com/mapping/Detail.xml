@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.DetailDao">
+    <select id="findDetailByWeeklyid" parameterType="int" resultType="com.domain.DetailModel">
+    	SELECT * FROM wm_detail WHERE weeklyid = #{id};
+    </select>
+    <insert id="addDetail" parameterType="com.domain.DetailModel" useGeneratedKeys="true" keyProperty="id">
+    	INSERT into wm_detail (weeklyid,members,important,tasknum,onlinenum,runnum,bugnum,business,description,next) values (#{weeklyid},#{members},#{important},#{tasknum},#{onlinenum},#{runnum},#{bugnum},#{business},#{description},#{next});
+    </insert>
+    <update id="updateDetail" parameterType="com.domain.DetailModel">
+    	UPDATE wm_detail
+    	<set>
+    		<if test="members != null">
+    			members = #{members},
+    		</if>
+    		<if test="important != null">
+    			important = #{important},
+    		</if>	
+    		<if test="tasknum != 0">
+    			tasknum = #{tasknum},
+    		</if>
+    		<if test="onlinenum != 0">
+    			onlinenum = #{onlinenum},
+    		</if>
+    		<if test="tasknum != 0 or onlinenum != 0">
+    			runnum = #{tasknum} - #{onlinenum},
+    		</if>
+    		<if test="bugnum != null">
+    			bugnum = #{bugnum},
+    		</if>
+    		<if test="business != null">
+    			business = #{business},
+    		</if>
+    		<if test="description != null">
+    			description = #{description},
+    		</if>
+    		<if test="next != null">
+    			next = #{next},
+    		</if>
+    		<if test="lasteditedtime != null">
+    			lasteditedtime = #{lasteditedtime}
+    		</if>
+    	</set>
+    	WHERE weeklyid = #{weeklyid};
+    </update>
+</mapper>

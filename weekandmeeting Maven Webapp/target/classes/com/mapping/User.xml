@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.UserDao">
+    <select id="getMatchCount" parameterType="String" resultType="int">
+    	SELECT count(*) FROM wm_user WHERE username = #{userName};
+    </select>
+    <select id="findUserByName" parameterType="String" resultType="com.domain.UserModel">
+    	SELECT * FROM wm_user WHERE username = #{username};
+    </select>
+    <update id="updateVisits" parameterType="com.domain.UserModel">
+    	UPDATE wm_user
+    	<set>
+    			visits = visits + 1,
+    		<if test="lasttime != null">
+    			lasttime = #{lasttime}
+    		</if>
+    	</set>
+    	WHERE username = #{username};
+    </update>
+</mapper>

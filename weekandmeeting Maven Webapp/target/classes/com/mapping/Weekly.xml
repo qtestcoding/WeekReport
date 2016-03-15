@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.WeeklyDao">
+	<resultMap type="com.domain.WeeklyModel" id="weeklyModelList">
+		<id column="id" property="id"/>
+		<result column="title" property="title"/>
+		<result column="type" property="type"/>
+		<result column="username" property="username"/>
+		<result column="islatesubmit" property="islatesubmit"/>
+		<result column="createtime" property="createtime"/>
+	</resultMap>
+	<select id="findWeeklyByWeeklyid" parameterType="int" resultType="com.domain.WeeklyModel">
+    	SELECT * FROM wm_weekly WHERE id = #{id};
+    </select>
+    <select id="findWeeklysByName" parameterType="String" resultMap="weeklyModelList">
+    	SELECT * FROM wm_weekly WHERE username = #{username} order by createtime desc;
+    </select>
+    <select id="findWeeklysByThis" resultMap="weeklyModelList">
+    	SELECT * FROM wm_weekly WHERE createtime between #{starttime} and #{endtime} order by createtime desc;
+    </select>
+    <select id="findWeeklysByNameAndTime" resultMap="weeklyModelList">
+    	SELECT * FROM wm_weekly
+    	<where>
+    		<if test="username != null">
+    			username = #{username}
+    		</if>
+    		<if test="starttime != null and endtime != null">
+    			and createtime between #{starttime} and #{endtime}
+    		</if>
+    	</where>
+    	ORDER BY createtime DESC;
+    </select>
+    <insert id="addWeekly" parameterType="com.domain.WeeklyModel" useGeneratedKeys="true" keyProperty="id">
+    	INSERT into wm_weekly (title,type,username,islatesubmit,datepicker) values (#{title},#{type},#{username},#{islatesubmit},#{datepicker});
+    </insert>
+</mapper>
